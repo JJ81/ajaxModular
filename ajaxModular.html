@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+<title>Make Ajax Modular</title>
+<!-- 
+	jQuery,
+	CoffeeScript
+	Deb.js
+	GulpJS
+	LESS
+ -->
+<style>
+ *{margin:0;padding:0}
+ body{-webkit-text-size-adjust: none;}
+.moreBtn,.cancelBtn{text-align:center;padding:10px}
+.ajax_loader{text-align:center;z-index:110;position:absolute;width:100%;left:0;top:auto;color:#fff}
+.bg_progress{background:#000;opacity:0.5;position:absolute;top:0;left:0;width:100%;z-index:100;height:100px}
+.blind{position:absolute;top:-9999em;left:-9999em;text-indent:-9999em;visibility:invisible}
+#wrapper div{padding:10px}
+</style>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.7.1/coffee-script.min.js"></script> 커피버전으로 변경 -->
+<!-- 크롬앱에서 사용하든가 자바스크립트를 넣어서 사용함. -->
+<script src="http://cdnjs.cloudflare.com/ajax/libs/deb.js/0.0.1/deb.min.js"></script>
+<!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/gulp/3.8.5/gulp.min.js"></script> -->
+
+
+</head>
+<body>
+	<!-- 
+		하단 버튼형, html dataType
+		
+	 -->
+	 
+	<div id="wrapper"></div>
+	<div class="moreBtn blind">...MORE...</div>
+	
+	<!-- ajax가 진행될 때만 버튼이 나타나도록 한다. -->
+	<div class="cancelBtn blind">CANCEL Ajax</div>
+	
+	<script src="ajaxModular_v1.js"></script>
+	<script>
+		var settings = {
+			url : "${pageContext.request.contextPath }/store/labs/html/",
+			type : "GET", // GET, POST 등의 차이점을 확인! or method
+			data : {},
+			dataType : "HTML",
+			target : $("#wrapper"),
+			buttonClass : "moreBtn" // 데이터를 불러오는 방식
+		};
+		
+		// 실패시 카운트제어를 애플리케이션 내부로 가져가야하나?, 실패시 카운트를 그대로 유지하기 위해서 실패여부를 확인하려면?
+		var startPage = 1;
+		// ajax를 controller로 변경
+		var ajax = new ajaxModular(settings);
+		ajax.makeAjaxOption();
+		ajax.callAjax(startPage);
+		
+		// To fetch more datas.
+		$("."+settings.buttonClass+"").bind("mousedown", function () {
+			startPage++;
+			ajax.callAjax(startPage);
+		});
+
+		// abort기능을 내부로 통합시킬 것.
+		// Abort to fetch data by ajax 
+		$(".cancelBtn").bind("mousedown", function () {
+			ajax.stopAjax();
+		});
+	
+		// test code for deb.js	
+		var calculateSomething = function(cb) {
+		    // ...
+		}.deb();
+		
+	</script>
+</body>
+</html>
